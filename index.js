@@ -24,7 +24,7 @@ let statusText = {
     1: "Создание фигуры. <br/>Замкните ее для продолжения.",
     2: "Фигура закончена. <br/>Многоугольник опуклый. <br/>Поставьте точки для определния принадлежности фигуре. После добавление всех точек нажмите Ctrl.",
     3: "Фигура закончена. <br/>Многоугольник не являеется опуклым. <br/>F5 для возврата.",
-    4: "Просмотр результата. <br/>Прим: Красные точки - не входят в многоугольние. <br/>Зеленые - входят.<br/>F5 для возврата.",
+    4: "Просмотр результата. <br/>Прим: Красные точки - не входят в многоугольние. <br/>Зеленые - входят.<br/>Наведите на точку для подробностей<br/>F5 для возврата.",
 }
 let mainDots = [];
 let traceLines = [];
@@ -39,7 +39,6 @@ function Dot(_x, _y, _color = "black") {
     this.intersection = 0;
 
     this.draw = function (__color2) {
-        // ctx.strokeStyle = color ? color : this.color;
         ctx.lineWidth = this.lineWidth;
         fillCircle(this.x, this.y, this.radius, __color2 ? __color2 : this.color)
         if (this.intersection > 0) {
@@ -77,10 +76,7 @@ function Vector(_startDot, _endDot) {
     }
 
     this.getCenter = function () {
-        // return {
-        //     x: (this.start.x + this.end.x) / 2,
-        //     y: (this.start.y + this.end.y) / 2,
-        // }
+
         return new Dot(
             (this.start.x + this.end.x) / 2,
             (this.start.y + this.end.y) / 2, "yellow");
@@ -176,7 +172,6 @@ function drawGrid(cellSize) {
     index = -1
     for (var y = 0.5; y <= canvas.height; y += cellSize - 0.1) {
         index > -1 ? ctx.fillText(index, 0, y) : true;
-        // ctx.fillText(index, 0, y);
         ctx.moveTo(0, y);
         ctx.lineTo(canvas.height, y);
         index++;
@@ -230,8 +225,6 @@ canvas.addEventListener('mousemove', e => {
         mainDots.forEach((dot, index, array) => {
             if ((dot.x == mouse.getDot().x) && (dot.y == mouse.getDot().y)) {
                 array[index].radius = 10;
-                // drawText(array[index].intersection, dot.x, dot.y);
-                // console.log(array[index].intersection);
             } else {
                 array[index].radius = 5;
             }
@@ -254,11 +247,9 @@ canvas.addEventListener('mousedown', e => {
     switch (properties.status) {
         case 1:
             mainFigure.addDot(mouse.getDot());
-            // testDotsArray.push(mouse.getDot());
             break;
         case 2:
             mainDots.push(mouse.getDot("blue"));
-            // mainFigure.addDot(mouse.getDot());
             break;
         default:
             break;
@@ -280,8 +271,6 @@ document.addEventListener('keydown', function (event) {
                         let newX = endDot.x + (endDot.x - startDot.x) / _lengthVecotr * _addSize;
                         let newY = endDot.y + (endDot.y - startDot.y) / _lengthVecotr * _addSize;
 
-
-
                         let _line = new Vector(startDot, new Dot(newX, newY));
 
                         _line.lineWidth = 1;
@@ -297,10 +286,6 @@ document.addEventListener('keydown', function (event) {
                         false: 0,
                     };
                     mainFigure.vectosArray.forEach((vector2) => {
-                        // denominator=(y4-y3)*(x1-x2)-(x4-x3)*(y1-y2);
-                        // 43 -
-                        // (x1,y1) (x2,y2) -- vecotr1
-                        // (x3,y3) (x4,y4) -- vecotr2
                         let x1 = vector1.start.x;
                         let y1 = vector1.start.y;
                         let x2 = vector1.end.x;
@@ -310,7 +295,6 @@ document.addEventListener('keydown', function (event) {
                         let x4 = vector2.end.x;
                         let y4 = vector2.end.y;
                         let _denominator = (y4 - y3) * (x1 - x2) - (x4 - x3) * (y1 - y2);
-                        // let _denominator = (vector2.end.y - vector2.start.y) * (vector1.start.x - vector1.end.x) - (vector2.end.x - vector2.start.x) * (vector1.start.y - vector1.end.y);
                         if (_denominator == 0) {
                             if ((x1 * y2 - x2 * y1) * (x4 - x3) - (x3 * y4 - x4 * y3) * (x2 - x1) == 0 && (x1 * y2 - x2 * y1) * (y4 - y3) - (x3 * y4 - x4 * y3) * (y2 - y1) == 0) {
                                 _objIntersection[true]++
@@ -328,20 +312,16 @@ document.addEventListener('keydown', function (event) {
                                 _objIntersection[false]++
                             }
                         }
-                        // _arrIntersection.push(_denominator);
                     })
                     if (_objIntersection.true >= 1) {
                         vector1.start.intersection += _objIntersection.true;
                         if (vector1.start.intersection == mainFigure.vectosArray.length) {
                             vector1.start.color = "green"
-                            // console.log('123');
                         } else {
                             vector1.start.color = "red"
 
                         }
                     }
-                    console.log(_objIntersection);
-
                 })
 
                 break;
